@@ -94,6 +94,13 @@ def kmh_to_mph(speed_in_kmh):
     speed_in_mph = speed_in_kmh * 0.621371
     return speed_in_mph
 
+def dew_point():
+    A = 17.27
+    B = 237.7
+    alpha = ((A * ambient_temp) / (B + ambient_temp)) + math.log(humidity/100.0)
+    dew_calc = (B * alpha) / (A - alpha)
+    return dew_calc
+
 rain_sensor = Button(6)
 rain_sensor.when_pressed = bucket_tipped
 
@@ -122,6 +129,7 @@ while True:
     
     humidity, pressure, ambient_temp = bme280_sensor.read_all()
     sl_pressure = pressure + ((pressure * 9.80665 * hasl)/(287 * (273 + ambient_temp + (hasl/400))))
+    dew_point_c = dew_point()
     now = datetime.now()
     print("Wind Speed:",wind_speed)
     print("Wind Gust:",wind_gust)
@@ -129,6 +137,7 @@ while True:
     print("Humidity:",humidity)
     print("Pressure:",sl_pressure)
     print("Ambient Temp:",ambient_temp)
+    print("Dew Point:",dew_point_c)
     print("Rainfall:",rainfall)
     print("Daily Rainfall:",daily_rainfall)
     print("Time:",now)
@@ -136,6 +145,7 @@ while True:
     
     #Formatting for WU
     ambient_temp_str = "{0:.2f}".format(degc_to_degf(ambient_temp))
+    dew_point_str = "{0:.2f}".format(degc_to_degf(dew_point_c))
     humidity_str = "{0:.2f}".format(humidity)
     sl_pressure_in_str = "{0:.2f}".format(hpa_to_inches(sl_pressure))
     wind_speed_mph_str = "{0:.2f}".format(kmh_to_mph(wind_speed))
@@ -155,6 +165,7 @@ while True:
     "&windspeedmph=" + wind_speed_mph_str +
     "&windgustmph=" + wind_gust_mph_str +
     "&tempf=" + ambient_temp_str +
+    "&dewptf=" + dew_point_str +
     "&rainin=" + rainfall_in_str +
     "&dailyrainin=" + daily_rainfall_in_str +
     "&winddir=" + wind_average_str +
@@ -170,6 +181,7 @@ while True:
     #"&windspeedmph=" + wind_speed_mph_str +
     #"&windgustmph=" + wind_gust_mph_str +
     #"&tempf=" + ambient_temp_str +
+    #"&dewptf=" + dew_point_str +
     #"&rainin=" + rainfall_in_str +
     #"&dailyrainin=" + daily_rainfall_in_str +
     #"&winddir=" + wind_average_str +
