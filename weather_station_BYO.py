@@ -103,6 +103,7 @@ db = database.weather_database()
 
 while True:
     start_time = time.time()
+    print("Collecting data")
     while time.time() - start_time <= db_interval:
         wind_start_time = time.time()
         reset_wind()
@@ -159,6 +160,21 @@ while True:
     "&winddir=" + wind_average_str +
     action_str)
     print("Weather Underground Upload " + str(r.text))
+    
+    #Print the web address
+    #print(WUurl +
+    #WUcreds +
+    #date_str +
+    #"&humidity=" + humidity_str +
+    #"&baromin=" + sl_pressure_in_str +
+    #"&windspeedmph=" + wind_speed_mph_str +
+    #"&windgustmph=" + wind_gust_mph_str +
+    #"&tempf=" + ambient_temp_str +
+    #"&rainin=" + rainfall_in_str +
+    #"&dailyrainin=" + daily_rainfall_in_str +
+    #"&winddir=" + wind_average_str +
+    #action_str)
+    
     store_speeds = []
     store_directions = []
     
