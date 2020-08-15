@@ -10,22 +10,26 @@ import database
 from datetime import datetime
 from datetime import date
 import requests
+import paho.mqtt.client as mqtt
 
 wind_count = 0
 radius_cm = 9.0
-wind_interval = 5
+wind_interval = 300
 CM_IN_A_KM = 100000.0
 SECS_IN_AN_HOUR = 3600
 ADJUSTMENT = 1.18
 store_speeds = []
 store_directions = []
-db_interval = 300
+db_interval = 10
 BUCKET_SIZE = 0.2794
 rain_count = 0
 daily_rain_count = 0
 hasl = 743
 sl_pressure = []
 today = date.today()
+broker_address="192.168.1.3"
+username = "mqttuser"
+password = "mqttpass"
 
 # create a string to hold the first part of the URL
 WUurl = "https://weatherstation.wunderground.com/weatherstation\
@@ -105,6 +109,30 @@ rain_sensor = Button(6)
 rain_sensor.when_pressed = bucket_tipped
 
 db = database.weather_database()
+
+def on_message(client, userdata, message):
+    print("message received " ,str(message.payload.decode("utf-8")))
+    print("message topic=",message.topic)
+    print("message qos=",message.qos)
+    print("message retain flag=",message.retain)
+    
+def on_log(client, userdata, level, buf):
+    print("log: ",buf)
+
+# MQTT Connection
+client = mqtt.Client("P1") #create new instance
+client.on_message=on_message #attach function to callback
+client.username_pw_set(username=username,password=password)
+client.connect(broker_address) #connect to broker
+client.subscribe("house/weather/wind_speed")
+client.subscribe("house/weather/wind_gust")
+client.subscribe("house/weather/wind_average")
+client.subscribe("house/weather/humidity")
+client.subscribe("house/weather/sl_pressure")
+client.subscribe("house/weather/ambient_temp")
+client.subscribe("house/weather/dew_point_c")
+client.subscribe("house/weather/rainfall")
+client.subscribe("house/weather/daily_rainfall")
 
 #Loop to measure wind speed and report at 5-second intervals   
 
@@ -186,6 +214,22 @@ while True:
     #"&dailyrainin=" + daily_rainfall_in_str +
     #"&winddir=" + wind_average_str +
     #action_str)
+    
+    #Send to Home Assistant
+    
+    client.loop_start() #start the loop
+    client.publish("house/weather/wind_speed",wind_speed)
+    client.publish("house/weather/wind_gust",wind_gust)
+    client.publish("house/weather/wind_average",wind_average)
+    client.publish("house/weather/humidity",humidity)
+    client.publish("house/weather/sl_pressure",sl_pressure)
+    client.publish("house/weather/ambient_temp",ambient_temp)
+    client.publish("house/weather/dew_point_c",dew_point_c)
+    client.publish("house/weather/rainfall",rainfall)
+    client.publish("house/weather/daily_rainfall",daily_rainfall)
+    client.on_log=on_log
+    #time.sleep(4) # wait
+    client.loop_stop() #stop the loop
     
     store_speeds = []
     store_directions = []
