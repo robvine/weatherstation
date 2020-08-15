@@ -119,21 +119,6 @@ def on_message(client, userdata, message):
 def on_log(client, userdata, level, buf):
     print("log: ",buf)
 
-# MQTT Connection
-client = mqtt.Client("P1") #create new instance
-client.on_message=on_message #attach function to callback
-client.username_pw_set(username=username,password=password)
-client.connect(broker_address) #connect to broker
-client.subscribe("house/weather/wind_speed")
-client.subscribe("house/weather/wind_gust")
-client.subscribe("house/weather/wind_average")
-client.subscribe("house/weather/humidity")
-client.subscribe("house/weather/sl_pressure")
-client.subscribe("house/weather/ambient_temp")
-client.subscribe("house/weather/dew_point_c")
-client.subscribe("house/weather/rainfall")
-client.subscribe("house/weather/daily_rainfall")
-
 #Loop to measure wind speed and report at 5-second intervals   
 
 while True:
@@ -216,17 +201,29 @@ while True:
     #action_str)
     
     #Send to Home Assistant
-    
+    client = mqtt.Client("P1") #create new instance
+    client.on_message=on_message #attach function to callback
+    client.username_pw_set(username=username,password=password)
+    client.connect(broker_address) #connect to broker
     client.loop_start() #start the loop
-    client.publish("house/weather/wind_speed",wind_speed)
-    client.publish("house/weather/wind_gust",wind_gust)
-    client.publish("house/weather/wind_average",wind_average)
-    client.publish("house/weather/humidity",humidity)
-    client.publish("house/weather/sl_pressure",sl_pressure)
-    client.publish("house/weather/ambient_temp",ambient_temp)
-    client.publish("house/weather/dew_point_c",dew_point_c)
-    client.publish("house/weather/rainfall",rainfall)
-    client.publish("house/weather/daily_rainfall",daily_rainfall)
+    client.subscribe("house/weather/wind_speed")
+    client.subscribe("house/weather/wind_gust")
+    client.subscribe("house/weather/wind_average")
+    client.subscribe("house/weather/humidity")
+    client.subscribe("house/weather/sl_pressure")
+    client.subscribe("house/weather/ambient_temp")
+    client.subscribe("house/weather/dew_point_c")
+    client.subscribe("house/weather/rainfall")
+    client.subscribe("house/weather/daily_rainfall")
+    client.publish("house/weather/wind_speed",('{:.2f}'.format(wind_speed)))
+    client.publish("house/weather/wind_gust",('{:.2f}'.format(wind_gust)))
+    client.publish("house/weather/wind_average",('{:.2f}'.format(wind_average)))
+    client.publish("house/weather/humidity",('{:.2f}'.format(humidity)))
+    client.publish("house/weather/sl_pressure",('{:.2f}'.format(sl_pressure)))
+    client.publish("house/weather/ambient_temp",('{:.2f}'.format(ambient_temp)))
+    client.publish("house/weather/dew_point_c",('{:.2f}'.format(dew_point_c)))
+    client.publish("house/weather/rainfall",('{:.2f}'.format(rainfall)))
+    client.publish("house/weather/daily_rainfall",('{:.2f}'.format(daily_rainfall)))
     client.on_log=on_log
     #time.sleep(4) # wait
     client.loop_stop() #stop the loop
