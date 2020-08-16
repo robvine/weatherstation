@@ -14,13 +14,13 @@ import paho.mqtt.client as mqtt
 
 wind_count = 0
 radius_cm = 9.0
-wind_interval = 300
+wind_interval = 10
 CM_IN_A_KM = 100000.0
 SECS_IN_AN_HOUR = 3600
 ADJUSTMENT = 1.18
 store_speeds = []
 store_directions = []
-db_interval = 10
+db_interval = 300
 BUCKET_SIZE = 0.2794
 rain_count = 0
 daily_rain_count = 0
