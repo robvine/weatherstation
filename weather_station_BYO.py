@@ -11,6 +11,9 @@ from datetime import datetime
 from datetime import date
 import requests
 import paho.mqtt.client as mqtt
+import board
+import busio
+import adafruit_veml6075
 
 wind_count = 0
 radius_cm = 9.0
@@ -39,6 +42,10 @@ WU_station_pwd = "KotgSBbz" # Replace YYYY with your Password
 WUcreds = "ID=" + WU_station_id + "&PASSWORD="+ WU_station_pwd
 date_str = "&dateutc=now"
 action_str = "&action=updateraw"
+
+#UV Sensor Configuration
+i2c = busio.I2C(board.SCL, board.SDA)
+veml = adafruit_veml6075.VEML6075(i2c, integration_time=100)
 
 #Every half-rotation, add 1 to count
 def spin():
@@ -144,6 +151,7 @@ while True:
     sl_pressure = pressure + ((pressure * 9.80665 * hasl)/(287 * (273 + ambient_temp + (hasl/400))))
     dew_point_c = dew_point()
     now = datetime.now()
+
     print("Wind Speed:",wind_speed)
     print("Wind Gust:",wind_gust)
     print("Wind Average:",wind_average)
@@ -154,6 +162,9 @@ while True:
     print("Rainfall:",rainfall)
     print("Daily Rainfall:",daily_rainfall)
     print("Time:",now)
+    print("UV Index:",veml.uv_index)
+    print("UV A:",veml.uva)
+    print("UV B:",veml.uvb)
     db.insert(ambient_temp, 0, 0, sl_pressure, humidity, wind_average, wind_speed, wind_gust, rainfall, now)
     
     #Formatting for WU
@@ -166,7 +177,7 @@ while True:
     wind_average_str = str(wind_average)
     rainfall_in_str = "{0:.2f}".format(mm_to_inches(rainfall))
     daily_rainfall_in_str = "{0:.2f}".format(mm_to_inches(daily_rainfall))
-
+    uv_index_str = "{0:.2f}".format(veml.uv_index)
 
     #Send to WU
     r= requests.get(
@@ -182,6 +193,7 @@ while True:
     "&rainin=" + rainfall_in_str +
     "&dailyrainin=" + daily_rainfall_in_str +
     "&winddir=" + wind_average_str +
+    "&UV=" + uv_index_str +
     action_str)
     print("Weather Underground Upload " + str(r.text))
     
@@ -215,6 +227,9 @@ while True:
     client.subscribe("house/weather/dew_point_c")
     client.subscribe("house/weather/rainfall")
     client.subscribe("house/weather/daily_rainfall")
+    client.subscribe("house/weather/uv_index")
+    client.subscribe("house/weather/uv_a")
+    client.subscribe("house/weather/uv_b")
     client.publish("house/weather/wind_speed",('{:.2f}'.format(wind_speed)))
     client.publish("house/weather/wind_gust",('{:.2f}'.format(wind_gust)))
     client.publish("house/weather/wind_average",('{:.2f}'.format(wind_average)))
@@ -224,6 +239,9 @@ while True:
     client.publish("house/weather/dew_point_c",('{:.2f}'.format(dew_point_c)))
     client.publish("house/weather/rainfall",('{:.2f}'.format(rainfall)))
     client.publish("house/weather/daily_rainfall",('{:.2f}'.format(daily_rainfall)))
+    client.publish("house/weather/uv_index",('{:.2f}'.format(veml.uv_index)))
+    client.publish("house/weather/uv_a",('{:.2f}'.format(veml.uva)))
+    client.publish("house/weather/uv_b",('{:.2f}'.format(veml.uvb)))
     client.on_log=on_log
     #time.sleep(4) # wait
     client.loop_stop() #stop the loop
