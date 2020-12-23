@@ -11,6 +11,9 @@ from datetime import datetime
 from datetime import date
 import requests
 import paho.mqtt.client as mqtt
+import board
+import busio
+import adafruit_veml6075
 
 wind_count = 0
 radius_cm = 9.0
@@ -20,7 +23,7 @@ SECS_IN_AN_HOUR = 3600
 ADJUSTMENT = 1.18
 store_speeds = []
 store_directions = []
-db_interval = 300
+db_interval = 30
 BUCKET_SIZE = 0.2794
 rain_count = 0
 daily_rain_count = 0
@@ -39,6 +42,10 @@ WU_station_pwd = "KotgSBbz" # Replace YYYY with your Password
 WUcreds = "ID=" + WU_station_id + "&PASSWORD="+ WU_station_pwd
 date_str = "&dateutc=now"
 action_str = "&action=updateraw"
+
+#UV Sensor Configuration
+i2c = busio.I2C(board.SCL, board.SDA)
+veml = adafruit_veml6075.VEML6075(i2c, integration_time=100)
 
 #Every half-rotation, add 1 to count
 def spin():
@@ -154,6 +161,9 @@ while True:
     print("Rainfall:",rainfall)
     print("Daily Rainfall:",daily_rainfall)
     print("Time:",now)
+    print("UV Index:",veml.uv_index)
+    print("UV A:",veml.uva)
+    print("UV B:",veml.uvb)
     db.insert(ambient_temp, 0, 0, sl_pressure, humidity, wind_average, wind_speed, wind_gust, rainfall, now)
     
     #Formatting for WU
