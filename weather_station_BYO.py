@@ -151,6 +151,7 @@ while True:
     sl_pressure = pressure + ((pressure * 9.80665 * hasl)/(287 * (273 + ambient_temp + (hasl/400))))
     dew_point_c = dew_point()
     now = datetime.now()
+
     print("Wind Speed:",wind_speed)
     print("Wind Gust:",wind_gust)
     print("Wind Average:",wind_average)
@@ -176,7 +177,7 @@ while True:
     wind_average_str = str(wind_average)
     rainfall_in_str = "{0:.2f}".format(mm_to_inches(rainfall))
     daily_rainfall_in_str = "{0:.2f}".format(mm_to_inches(daily_rainfall))
-
+    uv_index_str = "{0:.2f}".format(veml.uv_index)
 
     #Send to WU
     r= requests.get(
@@ -192,6 +193,7 @@ while True:
     "&rainin=" + rainfall_in_str +
     "&dailyrainin=" + daily_rainfall_in_str +
     "&winddir=" + wind_average_str +
+    "&UV=" + uv_index_str +
     action_str)
     print("Weather Underground Upload " + str(r.text))
     
