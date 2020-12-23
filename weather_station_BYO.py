@@ -227,6 +227,9 @@ while True:
     client.subscribe("house/weather/dew_point_c")
     client.subscribe("house/weather/rainfall")
     client.subscribe("house/weather/daily_rainfall")
+    client.subscribe("house/weather/uv_index")
+    client.subscribe("house/weather/uv_a")
+    client.subscribe("house/weather/uv_b")
     client.publish("house/weather/wind_speed",('{:.2f}'.format(wind_speed)))
     client.publish("house/weather/wind_gust",('{:.2f}'.format(wind_gust)))
     client.publish("house/weather/wind_average",('{:.2f}'.format(wind_average)))
@@ -236,6 +239,9 @@ while True:
     client.publish("house/weather/dew_point_c",('{:.2f}'.format(dew_point_c)))
     client.publish("house/weather/rainfall",('{:.2f}'.format(rainfall)))
     client.publish("house/weather/daily_rainfall",('{:.2f}'.format(daily_rainfall)))
+    client.publish("house/weather/uv_index",('{:.2f}'.format(veml.uv_index)))
+    client.publish("house/weather/uv_a",('{:.2f}'.format(veml.uva)))
+    client.publish("house/weather/uv_b",('{:.2f}'.format(veml.uvb)))
     client.on_log=on_log
     #time.sleep(4) # wait
     client.loop_stop() #stop the loop
