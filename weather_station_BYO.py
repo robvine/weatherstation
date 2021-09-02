@@ -14,7 +14,10 @@ import paho.mqtt.client as mqtt
 import board
 import busio
 import adafruit_veml6075
+<<<<<<< HEAD
 import ds18b20_therm
+=======
+>>>>>>> 529f12d418bc53ea21ded6826f8235dfa1500508
 
 wind_count = 0
 radius_cm = 9.0
@@ -45,8 +48,13 @@ date_str = "&dateutc=now"
 action_str = "&action=updateraw"
 
 #UV Sensor Configuration
+<<<<<<< HEAD
 #i2c = busio.I2C(board.SCL, board.SDA)
 #veml = adafruit_veml6075.VEML6075(i2c, integration_time=100)
+=======
+i2c = busio.I2C(board.SCL, board.SDA)
+veml = adafruit_veml6075.VEML6075(i2c, integration_time=100)
+>>>>>>> 529f12d418bc53ea21ded6826f8235dfa1500508
 
 #Every half-rotation, add 1 to count
 def spin():
@@ -166,10 +174,17 @@ while True:
     print("Rainfall:",rainfall)
     print("Daily Rainfall:",daily_rainfall)
     print("Time:",now)
+<<<<<<< HEAD
 #    print("UV Index:",veml.uv_index)
 #    print("UV A:",veml.uva)
 #    print("UV B:",veml.uvb)
 #   db.insert(ambient_temp, 0, 0, sl_pressure, humidity, wind_average, wind_speed, wind_gust, rainfall, now)
+=======
+    print("UV Index:",veml.uv_index)
+    print("UV A:",veml.uva)
+    print("UV B:",veml.uvb)
+    db.insert(ambient_temp, 0, 0, sl_pressure, humidity, wind_average, wind_speed, wind_gust, rainfall, now)
+>>>>>>> 529f12d418bc53ea21ded6826f8235dfa1500508
     
     #Formatting for WU
     ambient_temp_str = "{0:.2f}".format(degc_to_degf(ambient_temp))
@@ -182,7 +197,11 @@ while True:
     wind_average_str = str(wind_average)
     rainfall_in_str = "{0:.2f}".format(mm_to_inches(rainfall))
     daily_rainfall_in_str = "{0:.2f}".format(mm_to_inches(daily_rainfall))
+<<<<<<< HEAD
 #    uv_index_str = "{0:.2f}".format(veml.uv_index)
+=======
+    uv_index_str = "{0:.2f}".format(veml.uv_index)
+>>>>>>> 529f12d418bc53ea21ded6826f8235dfa1500508
 
     #Send to WU
     r= requests.get(
@@ -199,7 +218,11 @@ while True:
     "&rainin=" + rainfall_in_str +
     "&dailyrainin=" + daily_rainfall_in_str +
     "&winddir=" + wind_average_str +
+<<<<<<< HEAD
 #    "&UV=" + uv_index_str +
+=======
+    "&UV=" + uv_index_str +
+>>>>>>> 529f12d418bc53ea21ded6826f8235dfa1500508
     action_str)
     print("Weather Underground Upload " + str(r.text))
     
@@ -234,9 +257,15 @@ while True:
     client.subscribe("house/weather/ground_temp")
     client.subscribe("house/weather/rainfall")
     client.subscribe("house/weather/daily_rainfall")
+<<<<<<< HEAD
 #    client.subscribe("house/weather/uv_index")
 #    client.subscribe("house/weather/uv_a")
 #    client.subscribe("house/weather/uv_b")
+=======
+    client.subscribe("house/weather/uv_index")
+    client.subscribe("house/weather/uv_a")
+    client.subscribe("house/weather/uv_b")
+>>>>>>> 529f12d418bc53ea21ded6826f8235dfa1500508
     client.publish("house/weather/wind_speed",('{:.2f}'.format(wind_speed)))
     client.publish("house/weather/wind_gust",('{:.2f}'.format(wind_gust)))
     client.publish("house/weather/wind_average",('{:.2f}'.format(wind_average)))
@@ -247,9 +276,15 @@ while True:
     client.publish("house/weather/ground_temp",('{:.2f}'.format(ground_temp)))
     client.publish("house/weather/rainfall",('{:.2f}'.format(rainfall)))
     client.publish("house/weather/daily_rainfall",('{:.2f}'.format(daily_rainfall)))
+<<<<<<< HEAD
 #    client.publish("house/weather/uv_index",('{:.2f}'.format(veml.uv_index)))
 #    client.publish("house/weather/uv_a",('{:.2f}'.format(veml.uva)))
 #    client.publish("house/weather/uv_b",('{:.2f}'.format(veml.uvb)))
+=======
+    client.publish("house/weather/uv_index",('{:.2f}'.format(veml.uv_index)))
+    client.publish("house/weather/uv_a",('{:.2f}'.format(veml.uva)))
+    client.publish("house/weather/uv_b",('{:.2f}'.format(veml.uvb)))
+>>>>>>> 529f12d418bc53ea21ded6826f8235dfa1500508
     client.on_log=on_log
     #time.sleep(4) # wait
     client.loop_stop() #stop the loop
